@@ -202,12 +202,7 @@ class EjercicioDetallesScreen extends StatelessWidget {
 
 
 class _NewActivityState2 extends State<NewActivity2> {
-  final List<String> _imagePaths = ['https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg',
-  'https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg',
-  'https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg',
-  'https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg',
-  'https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg',
-  'https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg'];
+  final List<String> _imagePaths = [    'https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg',    'https://www.sportlife.es/uploads/s1/76/28/31/1/article-flexion-hacia-delante-sentada-isquiotibiales-580f4b65a2c89.jpeg',    'https://media.istockphoto.com/id/1327616016/es/vector/atleta-masculino-saltando-en-el-estadio.jpg?s=612x612&w=0&k=20&c=nUIjYqI_OVV-Le43QPdQT55xPDPbUgOnFSmRykCWPc0=',    'https://calmatel.com/assets/wp-content/uploads/2018/12/sentadillas.jpg',    'https://images.vexels.com/media/users/3/191646/isolated/lists/06b52fbff7982a431f671f7ce7349f29-gran-silueta-de-rutina-de-ejercicios.png',    'https://st2.depositphotos.com/3837271/10204/i/450/depositphotos_102044118-stock-photo-coming-soon-written-on-track.jpg'  ];
 
   @override
   Widget build(BuildContext context) {
@@ -215,63 +210,74 @@ class _NewActivityState2 extends State<NewActivity2> {
       appBar: AppBar(
         title: const Text('Opciones de ejercicios'),
       ),
-      body: Stack(
-        children: [
-          GridView.builder(
-            itemCount: _imagePaths.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              mainAxisSpacing: 10.0,
-              crossAxisSpacing: 10.0,
-            ),
-            itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EjercicioDetallesScreen(
-                        imagePath: _imagePaths[index],
+      body: Center(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: Stack(
+            children: [
+              const Text(
+                'Selecciona ejercicios',
+                style: TextStyle(fontSize: 24.0),
+              ),
+              GridView.builder(
+                shrinkWrap: true,
+                itemCount: _imagePaths.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10.0,
+                  crossAxisSpacing: 10.0,
+                  childAspectRatio: 1.0,
+                ),
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey[400]!,
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EjercicioDetallesScreen(
+                              imagePath: _imagePaths[index],
+                            ),
+                          ),
+                        );
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          _imagePaths[index],
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   );
                 },
-                child: Image.network(
-                  _imagePaths[index],
-                  fit: BoxFit.cover,
-                ),
-              );
-            },
-          ),
-          Positioned(
-            top: 20.0,
-            left: 0.0,
-            right: 0.0,
-            child: Center(
-              child: Text(
-                'Selecciona un ejercicio',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
 
+
 class _NewActivityState extends State<NewActivity> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _contactoController = TextEditingController();
-  final _especialidadlabController = TextEditingController();
-  final _edadController = TextEditingController();
-  final _celularController = TextEditingController();
+  final _passwordControllerR = TextEditingController();
+  final _passwordControllerRConfirm = TextEditingController();
+  final _DNIController = TextEditingController();
+  final _institutoController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -289,7 +295,7 @@ class _NewActivityState extends State<NewActivity> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'Name',
+                  labelText: 'Nombre',
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
@@ -313,49 +319,51 @@ class _NewActivityState extends State<NewActivity> {
                 },
               ),
               TextFormField(
-                controller: _contactoController,
+                controller: _passwordControllerR,
                 decoration: InputDecoration(
-                  labelText: 'Contacto',
+                  labelText: 'Contraseña',
                 ),
+                obscureText: true,
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Please enter your contact name';
+                    return 'Please enter your password';
                   }
                   return null;
                 },
               ),
               TextFormField(
-                controller: _especialidadlabController,
+                controller: _passwordControllerRConfirm,
                 decoration: InputDecoration(
-                  labelText: 'Especialidad laboral',
+                  labelText: 'Confirmar contraseña',
                 ),
+                obscureText: true,
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Please enter your contact name';
+                    return 'Please enter your password';
                   }
                   return null;
                 },
               ),
               TextFormField(
-                controller: _edadController,
-                decoration: InputDecoration(
-                  labelText: 'Edad',
+                controller: _DNIController,
+                decoration: const InputDecoration(
+                  labelText: 'DNI',
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Please enter your contact name';
+                    return 'Please enter your name';
                   }
                   return null;
                 },
               ),
               TextFormField(
-                controller: _celularController,
-                decoration: InputDecoration(
-                  labelText: 'Numero de celular',
+                controller: _institutoController,
+                decoration: const InputDecoration(
+                  labelText: 'Instituto',
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
-                    return 'Please enter your contact name';
+                    return 'Please enter your name';
                   }
                   return null;
                 },
