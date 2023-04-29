@@ -137,10 +137,21 @@ class NewActivity2 extends StatefulWidget {
   _NewActivityState2 createState() => _NewActivityState2();
 }
 
-class EjercicioDetallesScreen extends StatelessWidget {
+class EjercicioDetallesScreen extends StatefulWidget {
   final String imagePath;
   EjercicioDetallesScreen({required this.imagePath});
+  @override
+  _EjercicioDetallesScreenState createState() =>
+      _EjercicioDetallesScreenState();
+}
+class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
+  bool _isPlaying = true;
 
+  void _togglePlayPause() {
+    setState(() {
+      _isPlaying = !_isPlaying;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,32 +172,36 @@ class EjercicioDetallesScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () {},
-                  child: Icon(Icons.play_arrow),
+                  onPressed: () {
+                    _showDialog(context);
+                  },
+                  child: Icon(Icons.redo),
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
                     padding: EdgeInsets.all(20),
-                    primary: Colors.blue,
+                    primary: Colors.orange,
+                  ),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: _togglePlayPause,
+                  child: Icon(
+                    _isPlaying ? Icons.play_arrow : Icons.stop,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(20),
+                    primary: _isPlaying ? Colors.blue : Colors.red,
                   ),
                 ),
                 SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: () {},
-                  child: Icon(Icons.pause),
+                  child: Icon(Icons.info),
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
                     padding: EdgeInsets.all(20),
                     primary: Colors.yellow,
-                  ),
-                ),
-                SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Icon(Icons.stop),
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(20),
-                    primary: Colors.red,
                   ),
                 ),
               ],
@@ -196,31 +211,98 @@ class EjercicioDetallesScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _showDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Borrar grabación'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('¿Esta seguro de eliminar la grabación?'),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Si'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('No'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
 
-
-
-
 class _NewActivityState2 extends State<NewActivity2> {
-  final List<String> _imagePaths = [    'https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg',    'https://www.sportlife.es/uploads/s1/76/28/31/1/article-flexion-hacia-delante-sentada-isquiotibiales-580f4b65a2c89.jpeg',    'https://media.istockphoto.com/id/1327616016/es/vector/atleta-masculino-saltando-en-el-estadio.jpg?s=612x612&w=0&k=20&c=nUIjYqI_OVV-Le43QPdQT55xPDPbUgOnFSmRykCWPc0=',    'https://calmatel.com/assets/wp-content/uploads/2018/12/sentadillas.jpg',    'https://images.vexels.com/media/users/3/191646/isolated/lists/06b52fbff7982a431f671f7ce7349f29-gran-silueta-de-rutina-de-ejercicios.png',    'https://st2.depositphotos.com/3837271/10204/i/450/depositphotos_102044118-stock-photo-coming-soon-written-on-track.jpg'  ];
+  final List<String> _imagePaths = [    'https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg',    'https://www.sportlife.es/uploads/s1/76/28/31/1/article-flexion-hacia-delante-sentada-isquiotibiales-580f4b65a2c89.jpeg',    'https://media.istockphoto.com/id/1327616016/es/vector/atleta-masculino-saltando-en-el-estadio.jpg?s=612x612&w=0&k=20&c=nUIjYqI_OVV-Le43QPdQT55xPDPbUgOnFSmRykCWPc0=',    'https://calmatel.com/assets/wp-content/uploads/2018/12/sentadillas.jpg',    'https://images.vexels.com/media/users/3/191646/isolated/lists/06b52fbff7982a431f671f7ce7349f29-gran-silueta-de-rutina-de-ejercicios.png',    'https://st2.depositphotos.com/3837271/10204/i/450/depositphotos_102044118-stock-photo-coming-soon-written-on-track.jpg',  ];
 
+  void _handleProfileMenuSelection(String value) {
+    // Manejar la selección del elemento del menú
+    // Aquí puede agregar lógica para navegar a diferentes pantallas o realizar otras acciones
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Opciones de ejercicios'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.account_circle),
+            onPressed: () {
+              // Mostrar menú desplegable del perfil
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  MediaQuery.of(context).size.width - 100.0,
+                  kToolbarHeight,
+                  0.0,
+                  0.0,
+                ),
+                items: [
+                  PopupMenuItem(
+                    value: 'perfil',
+                    child: Text('Mi perfil'),
+                  ),
+                  PopupMenuItem(
+                    value: 'configuracion',
+                    child: Text('Configuración'),
+                  ),
+                  PopupMenuItem(
+                    value: 'cerrar_sesion',
+                    child: Text('Cerrar sesión'),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.9,
-          child: Stack(
-            children: [
-              const Text(
-                'Selecciona ejercicios',
-                style: TextStyle(fontSize: 24.0),
-              ),
-              GridView.builder(
-                shrinkWrap: true,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Selecciona un ejercicio',
+              style: TextStyle(fontSize: 24.0),
+            ),
+            const SizedBox(height: 20.0),
+            Expanded(
+              child: GridView.builder(
                 itemCount: _imagePaths.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -229,44 +311,34 @@ class _NewActivityState2 extends State<NewActivity2> {
                   childAspectRatio: 1.0,
                 ),
                 itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey[400]!,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EjercicioDetallesScreen(
-                              imagePath: _imagePaths[index],
-                            ),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EjercicioDetallesScreen(
+                            imagePath: _imagePaths[index],
                           ),
-                        );
-                      },
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          _imagePaths[index],
-                          fit: BoxFit.cover,
                         ),
+                      );
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        _imagePaths[index],
+                        fit: BoxFit.cover,
                       ),
                     ),
                   );
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
 
 
 class _NewActivityState extends State<NewActivity> {
