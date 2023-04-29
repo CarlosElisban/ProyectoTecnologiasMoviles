@@ -32,8 +32,138 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+class _NewActivityState extends State<NewActivity> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordControllerR = TextEditingController();
+  final _passwordControllerRConfirm = TextEditingController();
+  final _DNIController = TextEditingController();
+  final _institutoController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Registrar usuario'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text("Nombre"),
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  hintText: 'Ingrese su nombre',
+                ),
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Por favor, ingrese su nombre';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              Text("Email"),
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  hintText: 'Ingrese su email',
+                ),
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Por favor, ingrese su correo electrónico';
+                  } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                    return 'Por favor, ingrese un correo electrónico válido';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              Text("Contraseña"),
+              TextFormField(
+                controller: _passwordControllerR,
+                decoration: InputDecoration(
+                  hintText: 'Ingrese su contraseña',
+                ),
+                obscureText: true,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Por favor, ingrese su contraseña';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              Text("Confirmar Contraseña"),
+              TextFormField(
+                controller: _passwordControllerRConfirm,
+                decoration: InputDecoration(
+                  hintText: 'Ingrese su contraseña nuevamente',
+                ),
+                obscureText: true,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Por favor, ingrese su contraseña';
+                  } else if (value != _passwordControllerR.text) {
+                    return 'Las contraseñas no coinciden';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              Text("DNI"),
+              TextFormField(
+                controller: _DNIController,
+                decoration: const InputDecoration(
+                  hintText: 'Ingrese su número de DNI',
+                ),
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Por favor, ingrese su número de DNI';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16.0),
+              Text("Instituto"),
+              TextFormField(
+                controller: _institutoController,
+                decoration: const InputDecoration(
+                  hintText: 'Ingrese el nombre de su instituto',
+                ),
+                validator: (value) {
+                  if (value?.isEmpty ?? true) {
+                    return 'Por favor, ingrese el nombre de su instituto';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 32.0),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    // Send data to API or do something with data
+                  }
+                },
+                child: const Text('Guardar'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-class _MyHomePageState extends State<MyHomePage> {
+
+
+
+  class _MyHomePageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -144,6 +274,351 @@ class EjercicioDetallesScreen extends StatefulWidget {
   _EjercicioDetallesScreenState createState() =>
       _EjercicioDetallesScreenState();
 }
+class InformacionScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Información'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.account_circle),
+            onPressed: () {
+              // Mostrar menú desplegable del perfil
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  MediaQuery.of(context).size.width - 100.0,
+                  kToolbarHeight,
+                  0.0,
+                  0.0,
+                ),
+                items: [
+                  PopupMenuItem(
+                    value: 'perfil',
+                    child: Text('Mi perfil'),
+                  ),
+                  PopupMenuItem(
+                    value: 'configuracion',
+                    child: Text('Configuración'),
+                  ),
+                  PopupMenuItem(
+                    value: 'cerrar_sesion',
+                    child: Text('Cerrar sesión'),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: Container(
+          margin: EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.black,
+              width: 1,
+            ),
+          ),
+
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.network(
+                "https://scontent.faqp2-3.fna.fbcdn.net/v/t39.30808-6/344311406_542428821429320_8500364704444899324_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=730e14&_nc_eui2=AeEnW-YaIOfOLKUPZccX5R_VIPpMiCr3ZWEg-kyIKvdlYQa1f0c2QGzG1LGgzA3c_Pttqtda9aHp7K86dP9Y-LpQ&_nc_ohc=Ax8kyvukL9QAX_Qbkrb&_nc_ht=scontent.faqp2-3.fna&oh=00_AfAU8uY0edk6x6Gd7hJhSgdRJRw4QK3pyym2FVgHaHf-nQ&oe=64531900",
+                width: 320,
+                height: 320,
+              ),
+              SizedBox(height: 0),
+              Text(
+                'Información del ejercicio',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 5),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Duración:',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '30 segundos',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Dificultad:',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Media',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 7),
+              Row(
+                children: [
+                  Expanded(
+                   child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Movimiento del tren superior:',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Correcta',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Consejos:',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Ninguno',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 7),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Movimiento del tren inferior:',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Incorrecta',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Consejos:',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Se requiere que ambos pies esten en el suelo',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 7),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Resultado completo:',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '60/100',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Repeticiones:',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '10',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => NewActivity2()),
+                      );
+                    },
+                    child: Text(
+                      'Confirmar',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
 class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
   bool _isPlaying = true;
 
@@ -152,11 +627,43 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
       _isPlaying = !_isPlaying;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Detalles del Ejercicio'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.account_circle),
+            onPressed: () {
+              // Mostrar menú desplegable del perfil
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  MediaQuery.of(context).size.width - 100.0,
+                  kToolbarHeight,
+                  0.0,
+                  0.0,
+                ),
+                items: [
+                  PopupMenuItem(
+                    value: 'perfil',
+                    child: Text('Mi perfil'),
+                  ),
+                  PopupMenuItem(
+                    value: 'configuracion',
+                    child: Text('Configuración'),
+                  ),
+                  PopupMenuItem(
+                    value: 'cerrar_sesion',
+                    child: Text('Cerrar sesión'),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
       body: Container(
         color: Colors.black,
@@ -196,7 +703,12 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
                 ),
                 SizedBox(width: 20),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => InformacionScreen()),
+                    );
+                  },
                   child: Icon(Icons.info),
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
@@ -341,111 +853,6 @@ class _NewActivityState2 extends State<NewActivity2> {
 }
 
 
-class _NewActivityState extends State<NewActivity> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordControllerR = TextEditingController();
-  final _passwordControllerRConfirm = TextEditingController();
-  final _DNIController = TextEditingController();
-  final _institutoController = TextEditingController();
 
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('New Activity'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre',
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your email address';
-                  } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
-                    return 'Please enter a valid email address';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _passwordControllerR,
-                decoration: InputDecoration(
-                  labelText: 'Contraseña',
-                ),
-                obscureText: true,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _passwordControllerRConfirm,
-                decoration: InputDecoration(
-                  labelText: 'Confirmar contraseña',
-                ),
-                obscureText: true,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _DNIController,
-                decoration: const InputDecoration(
-                  labelText: 'DNI',
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _institutoController,
-                decoration: const InputDecoration(
-                  labelText: 'Instituto',
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter your name';
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 
