@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -86,7 +88,46 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.insert(table, row);
   }
+
+  // Authenticate user with email and password
+  Future<Map<String, dynamic>> authenticateUser(String email, String password) async {
+    Database db = await instance.database;
+    List<Map<String, dynamic>> results = await db.query(
+      table,
+      columns: [columnId, columnName, columnEmail, columnPassword, columnDNI, columnInstituto],
+      where: "$columnEmail = ? AND $columnPassword = ?",
+      whereArgs: [email, password],
+      limit: 1,
+    );
+
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return {};
+    }
+  }
+  Future<Map<String, dynamic>> authenticateUserPerfil(String email) async {
+    Database db = await instance.database;
+    List<Map<String, dynamic>> results = await db.query(
+      table,
+      columns: [columnId, columnName, columnEmail, columnPassword, columnDNI, columnInstituto],
+      where: "$columnEmail = ?",
+      whereArgs: [email],
+      limit: 1,
+    );
+    return results[0];
+  }
+  Future<int> updateUser(String email, Map<String, dynamic> updatedUser) async {
+    final db = await instance.database;
+    return await db.update(
+      table,
+      updatedUser,
+      where: '$columnEmail = ?',
+      whereArgs: [email],
+    );
+  }
 }
+
 
 class _NewActivityState extends State<NewActivity> {
   final _formKey = GlobalKey<FormState>();
@@ -292,14 +333,38 @@ class _NewActivityState extends State<NewActivity> {
                       },
                     ),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          // TODO: Perform login authentication here
-                          // For demo purposes, navigate to the NewActivity screen
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => NewActivity2()),
-                          );
+                          final email = _emailController.text;
+                          final password = _passwordController.text;
+                          final user = await DatabaseHelper.instance.authenticateUser(email, password);
+                          print(user);
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setString("miCorreo", email);
+                          if (user.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => NewActivity2()),
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('ERROR'),
+                                  content: Text('El correo electrónico o la contraseña son incorrectos.'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('OK'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
                         }
                       },
                       child: Text('Iniciar sesión'),
@@ -336,7 +401,6 @@ class NewActivity2 extends StatefulWidget {
   @override
   _NewActivityState2 createState() => _NewActivityState2();
 }
-
 class EjercicioDetallesScreen extends StatefulWidget {
   final String imagePath;
   EjercicioDetallesScreen({required this.imagePath});
@@ -345,6 +409,12 @@ class EjercicioDetallesScreen extends StatefulWidget {
       _EjercicioDetallesScreenState();
 }
 class InformacionScreen extends StatelessWidget {
+  void _abrirActividadC(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ActividadC()),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -377,7 +447,11 @@ class InformacionScreen extends StatelessWidget {
                     child: Text('Cerrar sesión'),
                   ),
                 ],
-              );
+              ).then((value) {
+                if (value == 'perfil') {
+                  _abrirActividadC(context);
+                }
+              });
             },
           ),
         ],
@@ -663,6 +737,7 @@ class InformacionScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
+                        //Cambiar mas adelante
                         MaterialPageRoute(builder: (context) => NewActivity2()),
                       );
                     },
@@ -697,7 +772,12 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
       _isPlaying = !_isPlaying;
     });
   }
-
+  void _abrirActividadC(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ActividadC()),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -730,7 +810,11 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
                     child: Text('Cerrar sesión'),
                   ),
                 ],
-              );
+              ).then((value) {
+                if (value == 'perfil') {
+                  _abrirActividadC(context);
+                }
+              });
             },
           ),
         ],
@@ -837,6 +921,18 @@ class _NewActivityState2 extends State<NewActivity2> {
     // Manejar la selección del elemento del menú
     // Aquí puede agregar lógica para navegar a diferentes pantallas o realizar otras acciones
   }
+  void _abrirActividadC(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ActividadC()),
+    );
+  }
+  void _abrirConfiguracion(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Configuracion()),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -869,10 +965,16 @@ class _NewActivityState2 extends State<NewActivity2> {
                     child: Text('Cerrar sesión'),
                   ),
                 ],
-              );
-            },
+              ).then((value) {
+                 if (value == 'perfil') {
+                    _abrirActividadC(context);
+                }else if (value == 'configuracion') {
+                   _abrirConfiguracion(context);
+                 }
+            });
+              },
           ),
-        ],
+      ],
       ),
       body: Center(
         child: Column(
@@ -921,6 +1023,259 @@ class _NewActivityState2 extends State<NewActivity2> {
     );
   }
 }
+
+
+class ActividadC extends StatefulWidget {
+  const ActividadC({Key? key}) : super(key: key);
+
+  @override
+  _ActividadCState createState() => _ActividadCState();
+}
+
+class _ActividadCState extends State<ActividadC> {
+  late String _valor;
+  Map<String, dynamic> _userLogin = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _leerValorDeSharedPreferences();
+  }
+
+  Future<void> _leerValorDeSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final valor = prefs.getString('miCorreo') ?? '';
+    setState(() {
+      _valor = valor;
+    });
+
+    final userlogin = await DatabaseHelper.instance.authenticateUserPerfil(_valor);
+    setState(() {
+      _userLogin = userlogin;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Mi perfil'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Center(
+          child: _userLogin.isNotEmpty
+              ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: EdgeInsets.only(bottom: 20.0),
+                child: Image.network(
+                  'https://p16-va-default.akamaized.net/img/musically-maliva-obj/1665282759496710~c5_720x720.jpeg',
+                  height: 200,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Text(
+                  'Correo: ${_userLogin['email']}',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Text(
+                  'Nombre: ${_userLogin['name']}',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Text(
+                  'DNI: ${_userLogin['dni']}',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+              SizedBox(height: 10.0),
+              Container(
+                padding: EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Text(
+                  'Instituto: ${_userLogin['instituto']}',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+            ],
+          )
+              : CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+}
+
+class Configuracion extends StatefulWidget {
+  const Configuracion({Key? key}) : super(key: key);
+
+  @override
+  _ConfiguracionState createState() => _ConfiguracionState();
+}
+
+class _ConfiguracionState extends State<Configuracion> {
+  final _formKey = GlobalKey<FormState>();
+  late String _valor;
+  Map<String, dynamic> _userLogin = {};
+
+  final _emailController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _dniController = TextEditingController();
+  final _institutoController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _leerValorDeSharedPreferences();
+  }
+
+  Future<void> _leerValorDeSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final valor = prefs.getString('miCorreo') ?? '';
+    setState(() {
+      _valor = valor;
+    });
+
+    final userlogin = await DatabaseHelper.instance.authenticateUserPerfil(_valor);
+    setState(() {
+      _userLogin = userlogin;
+      _emailController.text = _userLogin['email'] ?? '';
+      _nameController.text = _userLogin['name'] ?? '';
+      _dniController.text = _userLogin['dni'] ?? '';
+      _institutoController.text = _userLogin['instituto'] ?? '';
+    });
+  }
+
+  Future<void> _actualizarDatos() async {
+    if (_formKey.currentState!.validate()) {
+      final updatedUser = {
+        'email': _emailController.text,
+        'name': _nameController.text,
+        'dni': _dniController.text,
+        'instituto': _institutoController.text,
+      };
+
+      final rowsAffected = await DatabaseHelper.instance.updateUser(_valor, updatedUser);
+      if (rowsAffected > 0) {
+        setState(() {
+          _userLogin = updatedUser;
+        });
+        ScaffoldMessenger.of(context as BuildContext).showSnackBar(SnackBar(content: Text('Datos actualizados')));
+      } else {
+        ScaffoldMessenger.of(context as BuildContext).showSnackBar(SnackBar(content: Text('Error al actualizar los datos')));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Configuración'),
+        ),
+        body: Padding(
+        padding: const EdgeInsets.all(16.0),
+    child: Form(
+    key: _formKey,
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    TextFormField(
+    controller: _emailController,
+    decoration: InputDecoration(labelText: 'Correo'),
+    validator: (value) {
+    if (value == null || value.isEmpty) {
+    return 'Por favor ingrese un correo';
+    }
+    return null;
+    },
+    ),
+    TextFormField(
+    controller: _nameController,
+    decoration: InputDecoration(labelText: 'Nombre'),
+    validator: (value) {
+    if (value == null || value.isEmpty) {
+    return 'Por favor ingrese un nombre';
+    }
+    return null;
+    },
+    ),
+    TextFormField(
+    controller: _dniController,
+    decoration: InputDecoration(labelText: 'DNI'),
+    validator: (value) {
+    if (value == null || value.isEmpty) {
+    return 'Por favor ingrese un DNI';
+    }
+    return null;
+    },
+    ),
+      TextFormField(
+        controller: _institutoController,
+        decoration: InputDecoration(labelText: 'Instituto'),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor ingrese un instituto';
+          }
+          return null;
+        },
+      ),
+      SizedBox(height: 16),
+      ElevatedButton(
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            _actualizarDatos();
+          }
+        },
+        child: Text('Actualizar datos'),
+      ),
+    ],
+    ),
+    ),
+        ),
+    );
+  }
+}
+
+
+
 
 
 
