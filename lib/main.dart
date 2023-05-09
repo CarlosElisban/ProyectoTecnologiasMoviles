@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,6 +34,60 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+class DatabaseHelper {
+  static final _databaseName = "mydatabase.db";
+  static final _databaseVersion = 1;
+  static final table = 'users';
+  static final columnId = '_id';
+  static final columnName = 'name';
+  static final columnEmail = 'email';
+  static final columnPassword = 'password';
+  static final columnDNI = 'dni';
+  static final columnInstituto = 'instituto';
+
+  // Make this a singleton class.
+  DatabaseHelper._privateConstructor();
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+
+  // Only have a single app-wide reference to the database.
+  static Database? _database;
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
+  }
+
+  // open the database
+  _initDatabase() async {
+    String path = await getDatabasesPath();
+    path = join(path, _databaseName);
+    return await openDatabase(path,
+        version: _databaseVersion, onCreate: _onCreate);
+  }
+
+  // SQL string to create the database and table
+  Future<void> _onCreate(Database db, int version) async {
+    await db.execute('''
+          CREATE TABLE $table (
+            $columnId INTEGER PRIMARY KEY,
+            $columnName TEXT NOT NULL,
+            $columnEmail TEXT NOT NULL,
+            $columnPassword TEXT NOT NULL,
+            $columnDNI TEXT NOT NULL,
+            $columnInstituto TEXT NOT NULL
+          )
+          ''');
+  }
+
+  // Helper methods
+
+  // Insert a row in the table
+  Future<int> insert(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    return await db.insert(table, row);
+  }
+}
+
 class _NewActivityState extends State<NewActivity> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -144,10 +200,24 @@ class _NewActivityState extends State<NewActivity> {
               ),
               SizedBox(height: 32.0),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     // Send data to API or do something with data
+                    Map<String, dynamic> row = {
+                      DatabaseHelper.columnName: _nameController.text,
+                      DatabaseHelper.columnEmail: _emailController.text,
+                      DatabaseHelper.columnPassword: _passwordControllerR.text,
+                      DatabaseHelper.columnDNI: _DNIController.text,
+                      DatabaseHelper.columnInstituto: _institutoController.text
+                    };
+                    final id = await DatabaseHelper.instance.insert(row);
+                    print('inserted row id: $id');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage(title: "Login")),
+
+                    );
                   }
                 },
                 child: const Text('Guardar'),
@@ -327,7 +397,7 @@ class InformacionScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.network(
-                "https://scontent.faqp2-3.fna.fbcdn.net/v/t39.30808-6/344311406_542428821429320_8500364704444899324_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=730e14&_nc_eui2=AeEnW-YaIOfOLKUPZccX5R_VIPpMiCr3ZWEg-kyIKvdlYQa1f0c2QGzG1LGgzA3c_Pttqtda9aHp7K86dP9Y-LpQ&_nc_ohc=Ax8kyvukL9QAX_Qbkrb&_nc_ht=scontent.faqp2-3.fna&oh=00_AfAU8uY0edk6x6Gd7hJhSgdRJRw4QK3pyym2FVgHaHf-nQ&oe=64531900",
+                "https://scontent.faqp2-3.fna.fbcdn.net/v/t39.30808-6/344311406_542428821429320_8500364704444899324_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=730e14&_nc_eui2=AeEnW-YaIOfOLKUPZccX5R_VIPpMiCr3ZWEg-kyIKvdlYQa1f0c2QGzG1LGgzA3c_Pttqtda9aHp7K86dP9Y-LpQ&_nc_ohc=ra2xnLxVNWMAX-wmIu3&_nc_ht=scontent.faqp2-3.fna&oh=00_AfDIdm8gJbnTHlEEssd9fCV4n6d-xM5T0uaeXqLis2YigQ&oe=645EF680",
                 width: 320,
                 height: 320,
               ),
@@ -671,7 +741,7 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.network(
-              "https://scontent.ftru5-1.fna.fbcdn.net/v/t39.30808-6/343016082_233756192639185_3369699152325551161_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=730e14&_nc_eui2=AeFLVV3pd6Y3rgOjA1xcBcp2lzVhMPY44R-XNWEw9jjhH_6PJe9jJG2PLBHqIXDLITFDbED6iKxR4kSOZw2mOJRe&_nc_ohc=6pSVsV0qrkMAX8OSMfv&_nc_zt=23&_nc_ht=scontent.ftru5-1.fna&oh=00_AfBSvGJNyCgaRLKDHiCr8vTyhIDiqCjFOWyjB2esflO9yg&oe=644F2DFA",
+              "https://scontent.faqp2-1.fna.fbcdn.net/v/t39.30808-6/343016082_233756192639185_3369699152325551161_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=730e14&_nc_eui2=AeFLVV3pd6Y3rgOjA1xcBcp2lzVhMPY44R-XNWEw9jjhH_6PJe9jJG2PLBHqIXDLITFDbED6iKxR4kSOZw2mOJRe&_nc_ohc=SNr_Pzch5pQAX9OabOl&_nc_ht=scontent.faqp2-1.fna&oh=00_AfAVrOXr8672J9sJL5tq2hKKdvDeKn48Cq8YQHn0EK7WDw&oe=645EFFFA",
               fit: BoxFit.cover,
             ),
             SizedBox(height: 20),
