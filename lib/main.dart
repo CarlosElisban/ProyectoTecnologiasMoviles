@@ -126,6 +126,14 @@ class DatabaseHelper {
       whereArgs: [email],
     );
   }
+  Future<int> deleteUser(String email) async {
+    final db = await database;
+    return await db.delete(
+      'users',
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+  }
 }
 
 
@@ -1265,6 +1273,36 @@ class _ConfiguracionState extends State<Configuracion> {
           }
         },
         child: Text('Actualizar datos'),
+      ),
+      ElevatedButton(
+        onPressed: () async {
+          final confirm = await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Eliminar cuenta'),
+              content: Text('¿Está seguro que desea eliminar su cuenta? Esta acción no se puede deshacer.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: Text('Eliminar'),
+                ),
+              ],
+            ),
+          );
+          if (confirm == true) {
+            await DatabaseHelper.instance.deleteUser(_valor);
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyHomePage(title:"Login")));
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          primary: Colors.red,
+        ),
+        child: Text('Eliminar cuenta'),
       ),
     ],
     ),
