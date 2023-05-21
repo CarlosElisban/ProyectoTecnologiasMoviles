@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:firebase_core/firebase_core.dart';
+
+
 
 
 void main() {
@@ -40,12 +44,19 @@ class DatabaseHelper {
   static final _databaseName = "mydatabase.db";
   static final _databaseVersion = 1;
   static final table = 'users';
+  static final table2 = 'Resultado';
   static final columnId = '_id';
   static final columnName = 'name';
   static final columnEmail = 'email';
   static final columnPassword = 'password';
   static final columnDNI = 'dni';
   static final columnInstituto = 'instituto';
+  static final columnIdResult= '_idResult';
+  static final columnIdUsuario = '_id';
+  static final columnMedida = 'Medida';
+  static final columnNombreEstudiante = 'Nombre_estudiante';
+  static final columnDuracion = 'Duracion';
+  static final columnRepeticiones = 'Repeticiones';
 
   // Make this a singleton class.
   DatabaseHelper._privateConstructor();
@@ -79,7 +90,19 @@ class DatabaseHelper {
             $columnInstituto TEXT NOT NULL
           )
           ''');
+    await db.execute('''
+    CREATE TABLE $table2 (
+      $columnIdResult INTEGER PRIMARY KEY,
+      $columnIdUsuario TEXT NOT NULL,
+      $columnNombreEstudiante TEXT NOT NULL,
+      $columnMedida INTEGER NOT NULL,
+      $columnDuracion INTEGER NOT NULL,
+      $columnRepeticiones INTEGER NOT NULL,
+      FOREIGN KEY ($columnIdUsuario) REFERENCES $table($columnId)
+    )
+  ''');
   }
+
 
   // Helper methods
 
@@ -87,6 +110,10 @@ class DatabaseHelper {
   Future<int> insert(Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db.insert(table, row);
+  }
+  Future<int> insertResultado(Map<String, dynamic> row) async {
+    Database db = await instance.database;
+    return await db.insert(table2, row);
   }
 
   // Authenticate user with email and password
@@ -113,6 +140,17 @@ class DatabaseHelper {
       columns: [columnId, columnName, columnEmail, columnPassword, columnDNI, columnInstituto],
       where: "$columnEmail = ?",
       whereArgs: [email],
+      limit: 1,
+    );
+    return results[0];
+  }
+  Future<Map<String, dynamic>> authenticateUserResult(int idResultex) async {
+    Database db = await instance.database;
+    List<Map<String, dynamic>> results = await db.query(
+      table2,
+      columns: [columnIdResult, columnIdUsuario, columnNombreEstudiante, columnMedida, columnDuracion, columnRepeticiones],
+      where: "$columnIdResult = ?",
+      whereArgs: [idResultex],
       limit: 1,
     );
     return results[0];
@@ -416,13 +454,47 @@ class EjercicioDetallesScreen extends StatefulWidget {
   _EjercicioDetallesScreenState createState() =>
       _EjercicioDetallesScreenState();
 }
-class InformacionScreen extends StatelessWidget {
+class InformacionScreen extends StatefulWidget {
+  @override
+  _InformacionScreenState createState() => _InformacionScreenState();
+}
+
+class _InformacionScreenState extends State<InformacionScreen> {
+  late int _lecturaResult;
+  Map<String, dynamic> _resultList = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchResultList();
+  }
+
+  Future<void> _fetchResultList() async {
+    final prefs = await SharedPreferences.getInstance();
+    final  lecturaResult= prefs.getInt("miID") ?? 0;
+    print('${lecturaResult}');
+    setState(() {
+      _lecturaResult = lecturaResult;
+    });
+    print('Esto entra a la función: ${_lecturaResult}');
+    final resultList = await DatabaseHelper.instance.authenticateUserResult(_lecturaResult);
+    setState(() {
+      print('Esta lista retorna ${resultList}');
+      _resultList = resultList;
+      print('Duraciónx: ${_resultList['Duracion']}');
+      print('Medidax ${_resultList['Medida']}');
+      print('NombreEstudaintex ${_resultList['Nombre_Estudiante']}');
+      print('Repeticionesx ${_resultList['Repeticiones']}');
+    });
+  }
+
   void _abrirActividadC(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ActividadC()),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -474,7 +546,6 @@ class InformacionScreen extends StatelessWidget {
               width: 1,
             ),
           ),
-
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -514,7 +585,7 @@ class InformacionScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '30 segundos',
+                            '${_resultList['Duracion']} segundos',
                             style: TextStyle(
                               fontSize: 15,
                             ),
@@ -536,77 +607,14 @@ class InformacionScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Dificultad:',
+                            'Medida: ',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            'Media',
-                            style: TextStyle(
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 7),
-              Row(
-                children: [
-                  Expanded(
-                   child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Movimiento del tren superior:',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Correcta',
-                            style: TextStyle(
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Consejos:',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Ninguno',
+                            '${_resultList['Medida']}',
                             style: TextStyle(
                               fontSize: 15,
                             ),
@@ -633,43 +641,14 @@ class InformacionScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Movimiento del tren inferior:',
+                            'Nombre de estudiante:',
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
-                            'Incorrecta',
-                            style: TextStyle(
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Consejos:',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Se requiere que ambos pies esten en el suelo',
+                            '${_resultList['Nombre_estudiante']}',
                             style: TextStyle(
                               fontSize: 15,
                             ),
@@ -683,35 +662,6 @@ class InformacionScreen extends StatelessWidget {
               SizedBox(height: 7),
               Row(
                 children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Resultado completo:',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            '60/100',
-                            style: TextStyle(
-                              fontSize: 15,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
@@ -732,7 +682,7 @@ class InformacionScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '10',
+                            '${_resultList['Repeticiones']}',
                             style: TextStyle(
                               fontSize: 15,
                             ),
@@ -745,7 +695,6 @@ class InformacionScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        //Cambiar mas adelante
                         MaterialPageRoute(builder: (context) => NewActivity2()),
                       );
                     },
@@ -771,19 +720,73 @@ class InformacionScreen extends StatelessWidget {
 }
 
 
-
 class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
   bool _isPlaying = true;
+  int _buttonPressCount = 0;
+  late String idUsuario = '';
+  late int lecturaResult;
 
-  void _togglePlayPause() {
+  void _togglePlayPause(BuildContext context) {
     setState(() {
       _isPlaying = !_isPlaying;
+      _buttonPressCount++;
+
+      if (_buttonPressCount == 2) {
+        var resultado = {
+          DatabaseHelper.columnIdUsuario: idUsuario,
+          DatabaseHelper.columnNombreEstudiante: 'Christopher Abensur Ochoa',
+          DatabaseHelper.columnMedida: 10,
+          DatabaseHelper.columnDuracion: 5,
+          DatabaseHelper.columnRepeticiones: 3,
+        };
+        Future<int> insertResult = DatabaseHelper.instance.insertResultado(resultado);
+        insertResult.then((_idResult) {
+            lecturaResult = _idResult;
+            print(lecturaResult);
+        });
+        _buttonPressCount = 0;
+      }
     });
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _leerIdUsuario();
+  }
+
+  Future<void> _leerIdUsuario() async {
+    final prefs = await SharedPreferences.getInstance();
+    final correo = prefs.getString('miCorreo') ?? '';
+
+    final db = await DatabaseHelper.instance.database;
+    final user = await db.query(
+      DatabaseHelper.table,
+      where: '${DatabaseHelper.columnEmail} = ?',
+      whereArgs: [correo],
+    );
+
+    if (user.isNotEmpty) {
+      final idUsuarioValue = user.first[DatabaseHelper.columnId].toString();
+      setState(() {
+        idUsuario = idUsuarioValue;
+      });
+    }
+  }
+
+
+// Rest of the code...
+
   void _abrirActividadC(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ActividadC()),
+    );
+  }
+  void _abrirInterfazRegistroEstudiante(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegistroEstudianteScreen()),
     );
   }
   @override
@@ -817,10 +820,16 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
                     value: 'cerrar_sesion',
                     child: Text('Cerrar sesión'),
                   ),
+                  PopupMenuItem(
+                    value: 'registrar_estudiante',
+                    child: Text('Registrar estudiante'),
+                  ),
                 ],
               ).then((value) {
                 if (value == 'perfil') {
                   _abrirActividadC(context);
+                } else if (value == 'registrar_estudiante') {
+                  _abrirInterfazRegistroEstudiante(context);
                 }
               });
             },
@@ -853,7 +862,9 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
                 ),
                 SizedBox(width: 20),
                 ElevatedButton(
-                  onPressed: _togglePlayPause,
+                  onPressed: () {
+                    _togglePlayPause(context);
+                  },
                   child: Icon(
                     _isPlaying ? Icons.play_arrow : Icons.stop,
                   ),
@@ -865,7 +876,9 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
                 ),
                 SizedBox(width: 20),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setInt("miID", lecturaResult);
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => InformacionScreen()),
@@ -878,6 +891,7 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
                     primary: Colors.yellow,
                   ),
                 ),
+
               ],
             ),
           ],
@@ -1311,8 +1325,90 @@ class _ConfiguracionState extends State<Configuracion> {
     );
   }
 }
+class RegistroEstudianteScreen extends StatelessWidget {
+  final _formKey = GlobalKey<FormState>();
+  late String _nombre;
+  late DateTime _fechaNacimiento;
+  late String _dni;
 
 
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Registrar estudiante'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Nombre',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, ingresa el nombre';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _nombre = value!;
+                },
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Fecha de nacimiento',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, ingresa la fecha de nacimiento';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  // Aquí puedes realizar el parseo de la fecha si es necesario
+                  // Por ejemplo: _fechaNacimiento = DateTime.parse(value!);
+                  _fechaNacimiento = DateTime.now(); // Ejemplo: establecer la fecha actual
+                },
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'DNI',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, ingresa el DNI';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _dni = value!;
+                },
+              ),
+              SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                     // Llamada a la función para enviar los datos a Firebase
+                  }
+                },
+                child: Text('Registrar'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 
 
