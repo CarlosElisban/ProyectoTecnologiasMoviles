@@ -1,16 +1,24 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 //import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:firebase_core/firebase_core.dart';
 
 
 
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -725,6 +733,10 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
   int _buttonPressCount = 0;
   late String idUsuario = '';
   late int lecturaResult;
+  //Nuevo para añadir la parte del READ
+  List<DocumentSnapshot> estudiantes = [];
+  DocumentSnapshot? estudianteSeleccionado;
+  //---------
 
   void _togglePlayPause(BuildContext context) {
     setState(() {
@@ -748,11 +760,21 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
       }
     });
   }
-
+  //NUEVO PARA EL READ
+  void obtenerEstudiantes() async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('estudiantes').get();
+    setState(() {
+      estudiantes = snapshot.docs;
+    });
+  }
+  //----------
   @override
   void initState() {
     super.initState();
     _leerIdUsuario();
+    //Nuevo para el READ
+    obtenerEstudiantes();
+    //----------
   }
 
   Future<void> _leerIdUsuario() async {
@@ -789,6 +811,18 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
       MaterialPageRoute(builder: (context) => RegistroEstudianteScreen()),
     );
   }
+  //NUEVO par READ
+  void _abrirInterfazSeleccionEstudiante(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => InterfazSeleccionEstudiante(estudiantes)),
+    ).then((estudiante) {
+      setState(() {
+        estudianteSeleccionado = estudiante;
+      });
+    });
+  }
+  //-----------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -824,12 +858,21 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
                     value: 'registrar_estudiante',
                     child: Text('Registrar estudiante'),
                   ),
+                  //NUEVO PARA READ
+                  PopupMenuItem(
+                    value: 'seleccionar_estudiante',
+                    child: Text('Seleccionar estudiante'),
+                  ),
+                  //-----
                 ],
               ).then((value) {
                 if (value == 'perfil') {
                   _abrirActividadC(context);
                 } else if (value == 'registrar_estudiante') {
                   _abrirInterfazRegistroEstudiante(context);
+                }
+                else if (value == 'seleccionar_estudiante') {
+                  _abrirInterfazSeleccionEstudiante(context);
                 }
               });
             },
@@ -846,6 +889,12 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
               fit: BoxFit.cover,
             ),
             SizedBox(height: 20),
+            //READ
+            Text(
+              'Estudiante seleccionado: ${estudianteSeleccionado != null ? estudianteSeleccionado!['nombre'] : 'Ninguno'}',
+              style: TextStyle(color: Colors.white), // Color de fuente blanco
+            ),
+            //----
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -955,6 +1004,21 @@ class _NewActivityState2 extends State<NewActivity2> {
       MaterialPageRoute(builder: (context) => Configuracion()),
     );
   }
+  //UPDATE ----------------
+  void _abrirEdicionEstudiantes(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EdicionEstudiantes()),
+    );
+  }
+
+  void _abrirEditarSingleEstudiante(BuildContext context, Estudiante estudiante) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditarSingleEstudiante(estudiante: estudiante)),
+    );
+  }
+  //UPDATE  -------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -983,6 +1047,10 @@ class _NewActivityState2 extends State<NewActivity2> {
                     child: Text('Configuración'),
                   ),
                   PopupMenuItem(
+                    value: 'editar_estudiantes',
+                    child: Text('Editar estudiantes'),
+                  ),
+                  PopupMenuItem(
                     value: 'cerrar_sesion',
                     child: Text('Cerrar sesión'),
                   ),
@@ -992,6 +1060,9 @@ class _NewActivityState2 extends State<NewActivity2> {
                     _abrirActividadC(context);
                 }else if (value == 'configuracion') {
                    _abrirConfiguracion(context);
+                 }
+                 else if (value == 'editar_estudiantes') {
+                   _abrirEdicionEstudiantes(context);
                  }
             });
               },
@@ -1331,8 +1402,6 @@ class RegistroEstudianteScreen extends StatelessWidget {
   late DateTime _fechaNacimiento;
   late String _dni;
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1397,11 +1466,29 @@ class RegistroEstudianteScreen extends StatelessWidget {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                     // Llamada a la función para enviar los datos a Firebase
+                    // Llamada a la función para enviar los datos a Firebase
+                    FirebaseFirestore.instance.collection('estudiantes').add({
+                      'nombre': _nombre,
+                      'fecha_nacimiento': _fechaNacimiento,
+                      'dni': _dni,
+                    }).then((value) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Registro exitoso'),
+                        ),
+                      );
+                    }).catchError((error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error al registrar'),
+                        ),
+                      );
+                    });
                   }
                 },
                 child: Text('Registrar'),
               ),
+
             ],
           ),
         ),
@@ -1409,9 +1496,227 @@ class RegistroEstudianteScreen extends StatelessWidget {
     );
   }
 }
+class InterfazSeleccionEstudiante extends StatelessWidget {
+  final List<DocumentSnapshot> estudiantes;
+
+  InterfazSeleccionEstudiante(this.estudiantes);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Seleccionar estudiante'),
+      ),
+      body: ListView.builder(
+        itemCount: estudiantes.length,
+        itemBuilder: (context, index) {
+          final estudiante = estudiantes[index];
+          final dni = estudiante['dni'];
+          final fechaNacimiento = estudiante['fecha_nacimiento'];
+          final nombre = estudiante['nombre'];
+          return ListTile(
+            title: Text(nombre),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('DNI: $dni'),
+                Text('Fecha de nacimiento: $fechaNacimiento'),
+              ],
+            ),
+            onTap: () {
+              Navigator.pop(context, estudiante);
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Icon(Icons.check),
+      ),
+    );
+  }
+}
+
+class EdicionEstudiantes extends StatefulWidget {
+  @override
+  _EdicionEstudiantesState createState() => _EdicionEstudiantesState();
+}
+
+class _EdicionEstudiantesState extends State<EdicionEstudiantes> {
+  List<Estudiante> _estudiantes = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Recuperar los estudiantes de la base de datos Firestore
+    FirebaseFirestore.instance.collection('estudiantes').get().then((QuerySnapshot snapshot) {
+      // Iterar sobre los documentos recuperados
+      snapshot.docs.forEach((QueryDocumentSnapshot document) {
+        // Obtener los datos del documento y realizar la conversión a Map<String, dynamic>
+        Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+
+        // Obtener los campos nombre y dni de manera segura utilizando el operador null-aware (?.)
+        String? nombre = data['nombre'] as String?;
+        String? dni = data['dni'] as String?;
+
+        // Verificar si los campos nombre y dni no son nulos antes de crear el objeto Estudiante
+        if (nombre != null && dni != null) {
+          // Crear un objeto Estudiante y aeSgregarlo a la lista _estudiantes
+          Estudiante estudiante = Estudiante(nombre: nombre, dni: dni);
+          setState(() {
+            _estudiantes.add(estudiante);
+          });
+        }
+      });
+    }).catchError((error) {
+      print('Error al recuperar los estudiantes: $error');
+    });
+  }
 
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edición de estudiantes'),
+      ),
+      body: ListView.builder(
+        itemCount: _estudiantes.length,
+        itemBuilder: (context, index) {
+          final estudiante = _estudiantes[index];
+          return ListTile(
+            title: Text(estudiante.nombre),
+            subtitle: Text(estudiante.dni),
+            onTap: () {
+              _abrirEditarSingleEstudiante(context, estudiante);
+            },
+          );
+        },
+      ),
+    );
+  }
+  void _abrirEditarSingleEstudiante(BuildContext context, Estudiante estudiante) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditarSingleEstudiante(estudiante: estudiante)),
+    );
+  }
+}
+class EditarSingleEstudiante extends StatefulWidget {
+  final Estudiante estudiante;
 
+  const EditarSingleEstudiante({required this.estudiante});
 
+  @override
+  _EditarSingleEstudianteState createState() => _EditarSingleEstudianteState();
+}
 
+class _EditarSingleEstudianteState extends State<EditarSingleEstudiante> {
+  // Variables para editar la información del estudiante
+  String? nombreINI;
+  String? dniINI;
+  String? nombre;
+  String? dni;
 
+  @override
+  void initState() {
+    super.initState();
+    // Inicializar las variables de nombre y dni con los valores actuales del estudiante
+    nombreINI = widget.estudiante.nombre;
+    dniINI = widget.estudiante.dni;
+    nombre = widget.estudiante.nombre;
+    dni = widget.estudiante.dni;
+  }
+  Future<String?> findEstudianteId(String? nombre, String? dni) async {
+    String? estudianteId;
+    print ('${nombre} y ${dni} se imprimen');
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('estudiantes')
+        .where('nombre', isEqualTo: nombre)
+        .where('dni', isEqualTo: dni)
+        .get();
+
+    if (snapshot.docs.length > 0) {
+      // Si se encontró un estudiante con los valores proporcionados,
+      // obtenemos el ID del primer documento de la consulta
+      print('Si se encontro');
+      estudianteId = snapshot.docs[0].id;
+    }
+    print('Este Id se esta encontrando a ver: ${estudianteId}');
+    return estudianteId;
+  }
+
+  String? estudianteIdR;
+
+  void obtenerEstudianteId(nombre,dni) async {
+    estudianteIdR = await findEstudianteId(nombreINI, dniINI);
+
+    if (estudianteIdR != null) {
+      DocumentReference estudianteRef = FirebaseFirestore.instance.collection('estudiantes').doc(estudianteIdR);
+
+      Map<String, dynamic> data = {
+        'nombre': nombre,
+        'dni': dni,
+        // Agrega aquí otros campos que desees actualizar
+      };
+
+      // Actualiza los datos del estudiante en la base de datos Firestore
+      estudianteRef.update(data).then((value) {
+        print('Datos del estudiante actualizados correctamente.');
+      }).catchError((error) {
+        print('Error al actualizar los datos del estudiante: $error');
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Editar estudiante'),
+      ),
+      body: Column(
+        children: [
+          TextField(
+            decoration: InputDecoration(
+              labelText: 'Nombre',
+            ),
+            onChanged: (value) {
+              setState(() {
+                 nombre = value;
+              });
+            },
+            controller: TextEditingController(text: nombre),
+          ),
+          TextField(
+            decoration: InputDecoration(
+              labelText: 'DNI',
+            ),
+            onChanged: (value) {
+              setState(() {
+                String dni = value;
+              });
+            },
+            controller: TextEditingController(text: dni),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              obtenerEstudianteId(nombre, dni);
+            },
+            child: Text('Guardar cambios'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Estudiante {
+  final String nombre;
+  final String dni;
+
+  Estudiante({required this.nombre, required this.dni});
+}

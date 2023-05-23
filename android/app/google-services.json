@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "636129866893",
+    "project_id": "relacionestudiantes",
+    "storage_bucket": "relacionestudiantes.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:636129866893:android:e93d61af284844724c9ec4",
+        "android_client_info": {
+          "package_name": "com.example.proyecto_framework"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "636129866893-ei1biru8cfb69q357q29pcp9d91hnsqv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4tgYCFDGeHII3LkhqlRnDgenUf3SGBuE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "636129866893-ei1biru8cfb69q357q29pcp9d91hnsqv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
