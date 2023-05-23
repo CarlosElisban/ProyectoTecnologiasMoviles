@@ -191,6 +191,7 @@ class _NewActivityState extends State<NewActivity> {
   final _passwordControllerRConfirm = TextEditingController();
   final _DNIController = TextEditingController();
   final _institutoController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -204,11 +205,27 @@ class _NewActivityState extends State<NewActivity> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text("Nombre"),
+              Text(
+                'Nombre',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                ),
+              ),
+              SizedBox(height: 8.0),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Ingrese su nombre',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 16.0,
+                  ),
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
@@ -218,27 +235,60 @@ class _NewActivityState extends State<NewActivity> {
                 },
               ),
               SizedBox(height: 16.0),
-              Text("Email"),
+              Text(
+                'Email',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                ),
+              ),
+              SizedBox(height: 8.0),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
                   hintText: 'Ingrese su email',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 16.0,
+                  ),
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
                     return 'Por favor, ingrese su correo electrónico';
-                  } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                  } else if (!RegExp(r'^[\w-.]+@([\w-]+.)+[\w-]{2,4}$')
+                      .hasMatch(value!)) {
                     return 'Por favor, ingrese un correo electrónico válido';
                   }
                   return null;
                 },
               ),
               SizedBox(height: 16.0),
-              Text("Contraseña"),
+              Text(
+                'Contraseña',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                ),
+              ),
+              SizedBox(height: 8.0),
               TextFormField(
                 controller: _passwordControllerR,
                 decoration: InputDecoration(
                   hintText: 'Ingrese su contraseña',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 16.0,
+                  ),
                 ),
                 obscureText: true,
                 validator: (value) {
@@ -249,11 +299,27 @@ class _NewActivityState extends State<NewActivity> {
                 },
               ),
               SizedBox(height: 16.0),
-              Text("Confirmar Contraseña"),
+              Text(
+                'Confirmar Contraseña',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                ),
+              ),
+              SizedBox(height: 8.0),
               TextFormField(
                 controller: _passwordControllerRConfirm,
                 decoration: InputDecoration(
                   hintText: 'Ingrese su contraseña nuevamente',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 16.0,
+                  ),
                 ),
                 obscureText: true,
                 validator: (value) {
@@ -266,11 +332,27 @@ class _NewActivityState extends State<NewActivity> {
                 },
               ),
               SizedBox(height: 16.0),
-              Text("DNI"),
+              Text(
+                'DNI',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                ),
+              ),
+              SizedBox(height: 8.0),
               TextFormField(
                 controller: _DNIController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Ingrese su número de DNI',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 16.0,
+                  ),
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
@@ -280,11 +362,27 @@ class _NewActivityState extends State<NewActivity> {
                 },
               ),
               SizedBox(height: 16.0),
-              Text("Instituto"),
+              Text(
+                'Instituto',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                ),
+              ),
+              SizedBox(height: 8.0),
               TextFormField(
                 controller: _institutoController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Ingrese el nombre de su instituto',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 16.0,
+                    horizontal: 16.0,
+                  ),
                 ),
                 validator: (value) {
                   if (value?.isEmpty ?? true) {
@@ -294,28 +392,46 @@ class _NewActivityState extends State<NewActivity> {
                 },
               ),
               SizedBox(height: 32.0),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    // Send data to API or do something with data
-                    Map<String, dynamic> row = {
-                      DatabaseHelper.columnName: _nameController.text,
-                      DatabaseHelper.columnEmail: _emailController.text,
-                      DatabaseHelper.columnPassword: _passwordControllerR.text,
-                      DatabaseHelper.columnDNI: _DNIController.text,
-                      DatabaseHelper.columnInstituto: _institutoController.text
-                    };
-                    final id = await DatabaseHelper.instance.insert(row);
-                    print('inserted row id: $id');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyHomePage(title: "Login")),
-
-                    );
-                  }
-                },
-                child: const Text('Guardar'),
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+// Send data to API or do something with data
+                      Map<String, dynamic> row = {
+                        DatabaseHelper.columnName: _nameController.text,
+                        DatabaseHelper.columnEmail: _emailController.text,
+                        DatabaseHelper.columnPassword:
+                        _passwordControllerR.text,
+                        DatabaseHelper.columnDNI: _DNIController.text,
+                        DatabaseHelper.columnInstituto:
+                        _institutoController.text
+                      };
+                      final id =
+                      await DatabaseHelper.instance.insert(row);
+                      print('inserted row id: $id');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyHomePage(title: "Login")),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    onPrimary: Colors.white,
+                    textStyle: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 16.0,
+                      horizontal: 32.0,
+                    ),
+                  ),
+                  child: const Text('Guardar'),
+                ),
               ),
             ],
           ),
@@ -324,11 +440,40 @@ class _NewActivityState extends State<NewActivity> {
     );
   }
 }
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 16.0,
+      ),
+    );
+  }
+
+  Widget _buildTextFormField(TextEditingController controller, String hintText,
+      FormFieldValidator<String>? validator) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: hintText,
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 16.0,
+          horizontal: 16.0,
+        ),
+      ),
+      obscureText: hintText.toLowerCase().contains('contraseña'),
+      validator: validator,
+    );
+  }
 
 
 
-
-  class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -340,108 +485,126 @@ class _NewActivityState extends State<NewActivity> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Bienvenido a Toph!',
-               style: TextStyle(fontSize: 24.0),
-            ),
-            const SizedBox(height: 16), // Separador vertical
-            Image.network(
-              'https://i.pinimg.com/736x/d5/03/c9/d503c957e17b0a45dda41e38b0d13d7a.jpg',
-              width: 200, // Ancho de la imagen
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                      ),
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) {
-                          return 'Please enter your email address';
-                        } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
-                          return 'Please enter a valid email address';
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                      ),
-                      obscureText: true,
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          final email = _emailController.text;
-                          final password = _passwordController.text;
-                          final user = await DatabaseHelper.instance.authenticateUser(email, password);
-                          print(user);
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setString("miCorreo", email);
-                          if (user.isNotEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => NewActivity2()),
-                            );
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('ERROR'),
-                                  content: Text('El correo electrónico o la contraseña son incorrectos.'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: Text('OK'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                        }
-                      },
-                      child: Text('Iniciar sesión'),
-                    ),
-                  ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Bienvenido a Toph!',
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
+                SizedBox(height: 24.0),
+                Image.network(
+                  'https://i.pinimg.com/736x/d5/03/c9/d503c957e17b0a45dda41e38b0d13d7a.jpg',
+                  width: 200.0,
+                  height: 200.0,
+                ),
+                SizedBox(height: 24.0),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value?.isEmpty ?? true) {
+                            return 'Por favor ingresa tu dirección de correo electrónico';
+                          } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                            return 'Por favor ingresa una dirección de correo electrónico válida';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Contraseña',
+                          border: OutlineInputBorder(),
+                        ),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value?.isEmpty ?? true) {
+                            return 'Por favor ingresa tu contraseña';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 24.0),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            final email = _emailController.text;
+                            final password = _passwordController.text;
+                            final user = await DatabaseHelper.instance.authenticateUser(email, password);
+                            print(user);
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setString("miCorreo", email);
+                            if (user.isNotEmpty) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => NewActivity2()),
+                              );
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('ERROR'),
+                                    content: Text('El correo electrónico o la contraseña son incorrectos.'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        child: Text('OK'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          }
+                        },
+                        child: Text('Iniciar sesión'),
+                      ),
+                      SizedBox(height: 16.0),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => NewActivity()),
+                          );
+                        },
+                        child: Text(
+                          'Registrar',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NewActivity()),
-                );
-              },
-              child: Text('Registrar'),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
+
 
 class NewActivity extends StatefulWidget {
   const NewActivity({Key? key}) : super(key: key);
@@ -986,24 +1149,34 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
 }
 
 class _NewActivityState2 extends State<NewActivity2> {
-  final List<String> _imagePaths = [    'https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg',    'https://www.sportlife.es/uploads/s1/76/28/31/1/article-flexion-hacia-delante-sentada-isquiotibiales-580f4b65a2c89.jpeg',    'https://media.istockphoto.com/id/1327616016/es/vector/atleta-masculino-saltando-en-el-estadio.jpg?s=612x612&w=0&k=20&c=nUIjYqI_OVV-Le43QPdQT55xPDPbUgOnFSmRykCWPc0=',    'https://calmatel.com/assets/wp-content/uploads/2018/12/sentadillas.jpg',    'https://images.vexels.com/media/users/3/191646/isolated/lists/06b52fbff7982a431f671f7ce7349f29-gran-silueta-de-rutina-de-ejercicios.png',    'https://st2.depositphotos.com/3837271/10204/i/450/depositphotos_102044118-stock-photo-coming-soon-written-on-track.jpg',  ];
+  final List<String> _imagePaths = [
+    'https://images.ecestaticos.com/WAot9QyeV2vzRuE1gVu55WLdv7Y=/0x0:0x0/1200x900/filters:fill(white):format(jpg)/f.elconfidencial.com%2Foriginal%2Fb3c%2Fc7c%2Fff6%2Fb3cc7cff6cc1ee44df172f15afa3e4f9.jpg',
+    'https://www.sportlife.es/uploads/s1/76/28/31/1/article-flexion-hacia-delante-sentada-isquiotibiales-580f4b65a2c89.jpeg',
+    'https://media.istockphoto.com/id/1327616016/es/vector/atleta-masculino-saltando-en-el-estadio.jpg?s=612x612&w=0&k=20&c=nUIjYqI_OVV-Le43QPdQT55xPDPbUgOnFSmRykCWPc0=',
+    'https://calmatel.com/assets/wp-content/uploads/2018/12/sentadillas.jpg',
+    'https://images.vexels.com/media/users/3/191646/isolated/lists/06b52fbff7982a431f671f7ce7349f29-gran-silueta-de-rutina-de-ejercicios.png',
+    'https://st2.depositphotos.com/3837271/10204/i/450/depositphotos_102044118-stock-photo-coming-soon-written-on-track.jpg',
+  ];
 
   void _handleProfileMenuSelection(String value) {
     // Manejar la selección del elemento del menú
-    // Aquí puede agregar lógica para navegar a diferentes pantallas o realizar otras acciones
+    // Aquí puedes agregar lógica para navegar a diferentes pantallas o realizar otras acciones
   }
+
   void _abrirActividadC(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ActividadC()),
     );
   }
+
   void _abrirConfiguracion(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => Configuracion()),
     );
   }
+
   //UPDATE ----------------
   void _abrirEdicionEstudiantes(BuildContext context) {
     Navigator.push(
@@ -1019,6 +1192,7 @@ class _NewActivityState2 extends State<NewActivity2> {
     );
   }
   //UPDATE  -------------------
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1056,26 +1230,27 @@ class _NewActivityState2 extends State<NewActivity2> {
                   ),
                 ],
               ).then((value) {
-                 if (value == 'perfil') {
-                    _abrirActividadC(context);
-                }else if (value == 'configuracion') {
-                   _abrirConfiguracion(context);
-                 }
-                 else if (value == 'editar_estudiantes') {
-                   _abrirEdicionEstudiantes(context);
-                 }
-            });
-              },
+                if (value == 'perfil') {
+                  _abrirActividadC(context);
+                } else if (value == 'configuracion') {
+                  _abrirConfiguracion(context);
+                } else if (value == 'editar_estudiantes') {
+                  _abrirEdicionEstudiantes(context);
+                }
+              });
+            },
           ),
-      ],
+        ],
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
               'Selecciona un ejercicio',
-              style: TextStyle(fontSize: 24.0),
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20.0),
             Expanded(
@@ -1099,11 +1274,17 @@ class _NewActivityState2 extends State<NewActivity2> {
                         ),
                       );
                     },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        _imagePaths[index],
-                        fit: BoxFit.cover,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(color: Colors.black, width: 2.0),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6.0),
+                        child: Image.network(
+                          _imagePaths[index],
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   );
@@ -1116,6 +1297,8 @@ class _NewActivityState2 extends State<NewActivity2> {
     );
   }
 }
+
+
 
 
 class ActividadC extends StatefulWidget {
@@ -1406,22 +1589,40 @@ class RegistroEstudianteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registrar estudiante'),
+        title: Text('Registro de Estudiante'),
       ),
-      body: Padding(
+      body: Container(
         padding: EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.lightBlueAccent, Colors.blueAccent],
+          ),
+        ),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                '¡Bienvenido al Registro de Estudiantes!',
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 24.0),
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Nombre',
+                  labelText: 'Nombre completo',
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, ingresa el nombre';
+                    return 'Por favor, ingrese el nombre completo del estudiante';
                   }
                   return null;
                 },
@@ -1432,11 +1633,13 @@ class RegistroEstudianteScreen extends StatelessWidget {
               SizedBox(height: 16.0),
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Fecha de nacimiento',
+                  labelText: 'Fecha de nacimiento (YYYY-MM-DD)',
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, ingresa la fecha de nacimiento';
+                    return 'Por favor, ingrese la fecha de nacimiento';
                   }
                   return null;
                 },
@@ -1450,10 +1653,12 @@ class RegistroEstudianteScreen extends StatelessWidget {
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'DNI',
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, ingresa el DNI';
+                    return 'Por favor, ingrese el número de identificación (DNI)';
                   }
                   return null;
                 },
@@ -1461,34 +1666,46 @@ class RegistroEstudianteScreen extends StatelessWidget {
                   _dni = value!;
                 },
               ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    // Llamada a la función para enviar los datos a Firebase
-                    FirebaseFirestore.instance.collection('estudiantes').add({
-                      'nombre': _nombre,
-                      'fecha_nacimiento': _fechaNacimiento,
-                      'dni': _dni,
-                    }).then((value) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Registro exitoso'),
-                        ),
-                      );
-                    }).catchError((error) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error al registrar'),
-                        ),
-                      );
-                    });
-                  }
-                },
-                child: Text('Registrar'),
+              SizedBox(height: 24.0),
+              Container(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      // Llamada a la función para enviar los datos a Firebase
+                      FirebaseFirestore.instance.collection('estudiantes').add({
+                        'nombre': _nombre,
+                        'fecha_nacimiento': _fechaNacimiento,
+                        'dni': _dni,
+                      }).then((value) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('¡Registro exitoso!'),
+                          ),
+                        );
+                      }).catchError((error) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error al registrar'),
+                          ),
+                        );
+                      });
+                    }
+                  },
+                  child: Text(
+                    'Registrar',
+                    style: TextStyle(fontSize: 18.0),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.lightBlueAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(26.0),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                  ),
+                ),
               ),
-
             ],
           ),
         ),
@@ -1496,6 +1713,8 @@ class RegistroEstudianteScreen extends StatelessWidget {
     );
   }
 }
+
+
 class InterfazSeleccionEstudiante extends StatelessWidget {
   final List<DocumentSnapshot> estudiantes;
 
@@ -1505,7 +1724,12 @@ class InterfazSeleccionEstudiante extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Seleccionar estudiante'),
+        title: Text(
+          'Seleccionar Estudiante',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: ListView.builder(
         itemCount: estudiantes.length,
@@ -1514,18 +1738,44 @@ class InterfazSeleccionEstudiante extends StatelessWidget {
           final dni = estudiante['dni'];
           final fechaNacimiento = estudiante['fecha_nacimiento'];
           final nombre = estudiante['nombre'];
-          return ListTile(
-            title: Text(nombre),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('DNI: $dni'),
-                Text('Fecha de nacimiento: $fechaNacimiento'),
-              ],
+          return Container(
+            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              border: Border.all(
+                color: Colors.grey[300]!,
+                width: 1.0,
+              ),
             ),
-            onTap: () {
-              Navigator.pop(context, estudiante);
-            },
+            child: ListTile(
+              title: Text(
+                nombre,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16.0,
+                ),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'DNI: $dni',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                  Text(
+                    'Fecha de nacimiento: $fechaNacimiento',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ],
+              ),
+              onTap: () {
+                Navigator.pop(context, estudiante);
+              },
+            ),
           );
         },
       ),
@@ -1550,21 +1800,20 @@ class _EdicionEstudiantesState extends State<EdicionEstudiantes> {
   @override
   void initState() {
     super.initState();
-
-    // Recuperar los estudiantes de la base de datos Firestore
+    // Recuperando los estudiantes de la base de datos Firestore
     FirebaseFirestore.instance.collection('estudiantes').get().then((QuerySnapshot snapshot) {
-      // Iterar sobre los documentos recuperados
+      // Iterando sobre los documentos recuperados
       snapshot.docs.forEach((QueryDocumentSnapshot document) {
-        // Obtener los datos del documento y realizar la conversión a Map<String, dynamic>
+        // Obteniendo los datos del documento y realizando la conversión a Map<String, dynamic>
         Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
-        // Obtener los campos nombre y dni de manera segura utilizando el operador null-aware (?.)
+        // Obteniendo los campos "nombre" y "dni" de manera segura utilizando el operador null-aware (?.)
         String? nombre = data['nombre'] as String?;
         String? dni = data['dni'] as String?;
 
-        // Verificar si los campos nombre y dni no son nulos antes de crear el objeto Estudiante
+        // Verificando si los campos "nombre" y "dni" no son nulos antes de crear el objeto Estudiante
         if (nombre != null && dni != null) {
-          // Crear un objeto Estudiante y aeSgregarlo a la lista _estudiantes
+          // Creando un objeto Estudiante y agregándolo a la lista _estudiantes
           Estudiante estudiante = Estudiante(nombre: nombre, dni: dni);
           setState(() {
             _estudiantes.add(estudiante);
@@ -1576,28 +1825,58 @@ class _EdicionEstudiantesState extends State<EdicionEstudiantes> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edición de estudiantes'),
+        title: Text(
+          'Edición de Estudiantes',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
-      body: ListView.builder(
-        itemCount: _estudiantes.length,
-        itemBuilder: (context, index) {
-          final estudiante = _estudiantes[index];
-          return ListTile(
-            title: Text(estudiante.nombre),
-            subtitle: Text(estudiante.dni),
-            onTap: () {
-              _abrirEditarSingleEstudiante(context, estudiante);
-            },
-          );
-        },
+      body: Container(
+        margin: EdgeInsets.all(10.0),
+        child: ListView.builder(
+          itemCount: _estudiantes.length,
+          itemBuilder: (context, index) {
+            final estudiante = _estudiantes[index];
+            return Container(
+              margin: EdgeInsets.only(bottom: 10.0),
+              padding: EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(
+                  color: Colors.grey,
+                  width: 1.0,
+                ),
+              ),
+              child: ListTile(
+                title: Text(
+                  estudiante.nombre,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                  ),
+                ),
+                subtitle: Text(
+                  'DNI: ${estudiante.dni}',
+                  style: TextStyle(
+                    fontSize: 14.0,
+                  ),
+                ),
+                onTap: () {
+                  _abrirEditarSingleEstudiante(context, estudiante);
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
+
   void _abrirEditarSingleEstudiante(BuildContext context, Estudiante estudiante) {
     Navigator.push(
       context,
@@ -1629,6 +1908,8 @@ class _EditarSingleEstudianteState extends State<EditarSingleEstudiante> {
     dniINI = widget.estudiante.dni;
     nombre = widget.estudiante.nombre;
     dni = widget.estudiante.dni;
+    nombreController.text = nombre!;
+    dniController.text = dni!;
   }
   Future<String?> findEstudianteId(String? nombre, String? dni) async {
     String? estudianteId;
@@ -1671,6 +1952,52 @@ class _EditarSingleEstudianteState extends State<EditarSingleEstudiante> {
       });
     }
   }
+  void eliminarEstudiante() async {
+    estudianteIdR = await findEstudianteId(nombreINI, dniINI);
+
+    if (estudianteIdR != null) {
+      DocumentReference estudianteRef = FirebaseFirestore.instance.collection('estudiantes').doc(estudianteIdR);
+
+      // Elimina el documento del estudiante de la base de datos Firestore
+      estudianteRef.delete().then((value) {
+        print('Estudiante eliminado correctamente.');
+        // Aquí puedes agregar cualquier otra lógica adicional después de eliminar el estudiante
+      }).catchError((error) {
+        print('Error al eliminar el estudiante: $error');
+      });
+    }
+  }
+  void _mostrarDialogoConfirmacion(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text('Confirmación'),
+          content: Text('¿Estás seguro de que deseas eliminar este estudiante?'),
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Cierra el diálogo
+              },
+            ),
+            TextButton(
+              child: Text('Eliminar'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Cierra el diálogo
+                eliminarEstudiante(); // Llama al método eliminarEstudiante
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
+  TextEditingController nombreController = TextEditingController();
+  TextEditingController dniController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -1689,7 +2016,7 @@ class _EditarSingleEstudianteState extends State<EditarSingleEstudiante> {
                  nombre = value;
               });
             },
-            controller: TextEditingController(text: nombre),
+            controller: nombreController,
           ),
           TextField(
             decoration: InputDecoration(
@@ -1697,16 +2024,25 @@ class _EditarSingleEstudianteState extends State<EditarSingleEstudiante> {
             ),
             onChanged: (value) {
               setState(() {
-                String dni = value;
+                 dni = value;
               });
             },
-            controller: TextEditingController(text: dni),
+            controller: dniController,
           ),
           ElevatedButton(
             onPressed: () {
               obtenerEstudianteId(nombre, dni);
             },
             child: Text('Guardar cambios'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              _mostrarDialogoConfirmacion(context);
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.red,
+            ),
+            child: Text('Eliminar estudiante'),
           ),
         ],
       ),

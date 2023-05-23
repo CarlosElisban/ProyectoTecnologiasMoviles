@@ -44,6 +44,9 @@ dev_dependencies:
   image_picker: ^0.8.4+3
   sqflite: ^2.0.0+3
   shared_preferences: ^2.0.8
+
+
+
   #cloud_firestore: ^4.7.1
   #firebase_core: ^2.13.0
 
