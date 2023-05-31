@@ -7,6 +7,8 @@ import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 //import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:firebase_core/firebase_core.dart';
@@ -1048,7 +1050,7 @@ class _EjercicioDetallesScreenState extends State<EjercicioDetallesScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.network(
-              "https://scontent.faqp2-1.fna.fbcdn.net/v/t39.30808-6/343016082_233756192639185_3369699152325551161_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=730e14&_nc_eui2=AeFLVV3pd6Y3rgOjA1xcBcp2lzVhMPY44R-XNWEw9jjhH_6PJe9jJG2PLBHqIXDLITFDbED6iKxR4kSOZw2mOJRe&_nc_ohc=SNr_Pzch5pQAX9OabOl&_nc_ht=scontent.faqp2-1.fna&oh=00_AfAVrOXr8672J9sJL5tq2hKKdvDeKn48Cq8YQHn0EK7WDw&oe=645EFFFA",
+              "https://scontent.flim1-2.fna.fbcdn.net/v/t39.30808-6/343016082_233756192639185_3369699152325551161_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=730e14&_nc_eui2=AeFLVV3pd6Y3rgOjA1xcBcp2lzVhMPY44R-XNWEw9jjhH_6PJe9jJG2PLBHqIXDLITFDbED6iKxR4kSOZw2mOJRe&_nc_ohc=92dsx3NOsdQAX-uP14k&_nc_ht=scontent.flim1-2.fna&oh=00_AfARZJqawmhEpYawJpYrh3xpRUrkx0TL5zIu0rnykFbYaw&oe=6472C67A",
               fit: BoxFit.cover,
             ),
             SizedBox(height: 20),
@@ -1158,12 +1160,22 @@ class _NewActivityState2 extends State<NewActivity2> {
     'https://st2.depositphotos.com/3837271/10204/i/450/depositphotos_102044118-stock-photo-coming-soon-written-on-track.jpg',
   ];
 
-  void _handleProfileMenuSelection(String value) {
+  void _handleProfileMenuSelection(String value, BuildContext context) {
     // Manejar la selección del elemento del menú
     // Aquí puedes agregar lógica para navegar a diferentes pantallas o realizar otras acciones
+    if (value == 'perfil') {
+      _abrirActividadC(context);
+    } else if (value == 'configuracion') {
+      _abrirConfiguracion(context);
+    } else if (value == 'editar_estudiantes') {
+      _abrirEdicionEstudiantes(context);
+    } else if (value == 'cerrar_sesion') {
+      _cerrarSesion();
+    }
   }
 
   void _abrirActividadC(BuildContext context) {
+    // Navegar a la pantalla de actividad C
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ActividadC()),
@@ -1171,14 +1183,15 @@ class _NewActivityState2 extends State<NewActivity2> {
   }
 
   void _abrirConfiguracion(BuildContext context) {
+    // Navegar a la pantalla de configuración
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => Configuracion()),
     );
   }
 
-  //UPDATE ----------------
   void _abrirEdicionEstudiantes(BuildContext context) {
+    // Navegar a la pantalla de edición de estudiantes
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EdicionEstudiantes()),
@@ -1186,12 +1199,33 @@ class _NewActivityState2 extends State<NewActivity2> {
   }
 
   void _abrirEditarSingleEstudiante(BuildContext context, Estudiante estudiante) {
+    // Navegar a la pantalla de edición de un estudiante específico
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => EditarSingleEstudiante(estudiante: estudiante)),
     );
   }
-  //UPDATE  -------------------
+
+  void _abrirLogin(BuildContext context) {
+    // Navegar a la pantalla de inicio de sesión
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
+
+  void _abrirRegistroUsuario(BuildContext context) {
+    // Navegar a la pantalla de registro de usuario
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RegistroUsuarioScreen()),
+    );
+  }
+
+  void _cerrarSesion() {
+    // Lógica para cerrar sesión del usuario
+    // ...
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1230,12 +1264,8 @@ class _NewActivityState2 extends State<NewActivity2> {
                   ),
                 ],
               ).then((value) {
-                if (value == 'perfil') {
-                  _abrirActividadC(context);
-                } else if (value == 'configuracion') {
-                  _abrirConfiguracion(context);
-                } else if (value == 'editar_estudiantes') {
-                  _abrirEdicionEstudiantes(context);
+                if (value != null) {
+                  _handleProfileMenuSelection(value, context);
                 }
               });
             },
@@ -1294,10 +1324,195 @@ class _NewActivityState2 extends State<NewActivity2> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Mostrar menú desplegable de opciones adicionales
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return Container(
+                child: Wrap(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.lock),
+                      title: Text('Iniciar sesión'),
+                      onTap: () {
+                        _abrirLogin(context);
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.folder),
+                      title: Text('Registrarse a FitTrackFile'),
+                      onTap: () {
+                        _abrirRegistroUsuario(context);
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
 
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+class _LoginScreenState extends State<LoginScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String email = '';
+  String password = '';
+
+  bool _isLoggedIn = false;
+
+  void _onEmailChanged(String value) {
+    setState(() {
+      email = value;
+    });
+  }
+
+  void _onPasswordChanged(String value) {
+    setState(() {
+      password = value;
+    });
+  }
+
+  void _validateLogin() async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      setState(() {
+        _isLoggedIn = true;
+      });
+    } catch (e) {
+      // Handle login errors here
+      print(e.toString());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Center(
+        child: _isLoggedIn
+            ? Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('¡Has iniciado sesión!'),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to RegistroDocumentosScreen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RegistroUsuarioScreen(),
+                  ),
+                );
+              },
+              child: Text('Ir a Registro de documentos'),
+            ),
+          ],
+        )
+            : Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Pantalla de inicio de sesión'),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Email'),
+              onChanged: _onEmailChanged,
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Password'),
+              obscureText: true,
+              onChanged: _onPasswordChanged,
+            ),
+            ElevatedButton(
+              onPressed: _validateLogin,
+              child: Text('Iniciar sesión'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+class RegistroUsuarioScreen extends StatefulWidget {
+  @override
+  _RegistroUsuarioScreenState createState() => _RegistroUsuarioScreenState();
+}
+
+class _RegistroUsuarioScreenState extends State<RegistroUsuarioScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String email = '';
+  String password = '';
+
+  void _onEmailChanged(String value) {
+    setState(() {
+      email = value;
+    });
+  }
+
+  void _onPasswordChanged(String value) {
+    setState(() {
+      password = value;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Registro de Usuario'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Pantalla de registro de usuario'),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Correo electrónico'),
+              onChanged: _onEmailChanged,
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Contraseña'),
+              obscureText: true,
+              onChanged: _onPasswordChanged,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  UserCredential userCredential =
+                  await _auth.createUserWithEmailAndPassword(
+                    email: email,
+                    password: password,
+                  );
+                  // El registro fue exitoso, puedes realizar acciones adicionales aquí
+                } catch (e) {
+                  // Maneja los errores de registro aquí
+                  print(e.toString());
+                }
+              },
+              child: Text('Registrarse'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 
 
