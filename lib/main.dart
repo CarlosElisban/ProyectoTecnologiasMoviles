@@ -1363,22 +1363,26 @@ class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
+
 class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String email = '';
   String password = '';
 
   bool _isLoggedIn = false;
+  String _errorMessage = '';
 
   void _onEmailChanged(String value) {
     setState(() {
       email = value;
+      _errorMessage = ''; // Limpiar el mensaje de error al cambiar el valor del campo de correo electrónico
     });
   }
 
   void _onPasswordChanged(String value) {
     setState(() {
       password = value;
+      _errorMessage = ''; // Limpiar el mensaje de error al cambiar el valor del campo de contraseña
     });
   }
 
@@ -1392,9 +1396,24 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoggedIn = true;
       });
     } catch (e) {
-      // Handle login errors here
-      print(e.toString());
+      setState(() {
+        _errorMessage = 'Error al iniciar sesión. Verifica tus credenciales.'; // Establecer el mensaje de error en caso de error de inicio de sesión
+      });
     }
+  }
+
+  void _openResetPasswordScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RestablecerContrasenaScreen()),
+    );
+  }
+
+  void _goToRegistroDocumentosScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => DocumentosRegistroEjerciciosScreen()),
+    );
   }
 
   @override
@@ -1411,13 +1430,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Text('¡Has iniciado sesión!'),
             ElevatedButton(
               onPressed: () {
-                // Navigate to RegistroDocumentosScreen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RegistroUsuarioScreen(),
-                  ),
-                );
+                _goToRegistroDocumentosScreen(context); // Redireccionar a DocumentosRegistroEjerciciosScreen
               },
               child: Text('Ir a Registro de documentos'),
             ),
@@ -1440,6 +1453,20 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: _validateLogin,
               child: Text('Iniciar sesión'),
             ),
+            TextButton(
+              onPressed: () {
+                _openResetPasswordScreen(context);
+              },
+              child: Text('¿Olvidaste tu contraseña?'),
+            ),
+            _errorMessage.isNotEmpty
+                ? Text(
+              _errorMessage,
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            )
+                : SizedBox(),
           ],
         ),
       ),
@@ -1447,8 +1474,88 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+class DocumentosRegistroEjerciciosScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Registro de documentos de ejercicios'),
+      ),
+      body: Center(
+        child: Text('Pantalla de registro de documentos de ejercicios'),
+      ),
+    );
+  }
+}
 
 
+class RestablecerContrasenaScreen extends StatefulWidget {
+  @override
+  _RestablecerContrasenaScreenState createState() => _RestablecerContrasenaScreenState();
+}
+
+class _RestablecerContrasenaScreenState extends State<RestablecerContrasenaScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String email = '';
+
+  void _onEmailChanged(String value) {
+    setState(() {
+      email = value;
+    });
+  }
+
+  void _enviarEnlaceRestablecerContrasena(BuildContext context) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Enlace enviado'),
+            content: Text('Se ha enviado un enlace para restablecer la contraseña a su correo electrónico.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Restablecimiento de Contraseña'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Ingrese su correo correspondiente'),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Correo electrónico'),
+              onChanged: _onEmailChanged,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _enviarEnlaceRestablecerContrasena(context);
+              },
+              child: Text('Restablecer contraseña'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 class RegistroUsuarioScreen extends StatefulWidget {
   @override
   _RegistroUsuarioScreenState createState() => _RegistroUsuarioScreenState();
@@ -1494,14 +1601,11 @@ class _RegistroUsuarioScreenState extends State<RegistroUsuarioScreen> {
             ElevatedButton(
               onPressed: () async {
                 try {
-                  UserCredential userCredential =
-                  await _auth.createUserWithEmailAndPassword(
+                  UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
                     email: email,
                     password: password,
                   );
-                  // El registro fue exitoso, puedes realizar acciones adicionales aquí
                 } catch (e) {
-                  // Maneja los errores de registro aquí
                   print(e.toString());
                 }
               },
