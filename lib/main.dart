@@ -13,16 +13,34 @@ import 'package:google_sign_in/google_sign_in.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:firebase_core/firebase_core.dart';
 
-
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Inicializar Firebase Messaging
+  FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+
+  // Solicitar permiso para recibir notificaciones
+  await firebaseMessaging.requestPermission();
+
+  // Obtener el token de registro de FCM
+  String? token = await firebaseMessaging.getToken();
+  if (token != null) {
+    print('FCM Registration Token: $token');
+  } else {
+    print('No se pudo obtener el token de registro de FCM');
+  }
+
   runApp(const MyApp());
 }
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
